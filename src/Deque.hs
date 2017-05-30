@@ -47,20 +47,27 @@ lastDEQ (MkDeque lenf f sf lenr r sr) = case r of
 		(x : tf) -> Just x
 	(x : tr) -> Just x
 
-takeFrontDEQ i (MkDeque lenf f sf lenr r sr) = 
+takeFrontDEQ i (MkDeque lenf f sf lenr r sr)
     | i <= lenf = take i f
     | otherwise = take i (f ++ reverse r)
 
-takeBackDEQ i (MkDeque lenf f sf lenr r sr) = 
+takeBackDEQ i (MkDeque lenf f sf lenr r sr)
     | i <= lenr = take i r
     | otherwise = take i (r ++ reverse f)
 
 pushFrontDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque (lenf+1) (elem:f) (drop 2 sf) lenr r (drop 2 sr))
-popFrontDEQ _ = Nothing
-pushBackDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque lenf f (drop 2 sf) (lenr+1) (elem:r) (drop 2 sr))
-popBackDEQ _ = Nothing
-fromListDEQ _ = MkDeque 0 [] [] 0 [] []
 
+popFrontDEQ (MkDeque lenf f sf lenr r sr) = case f of
+	[] -> case r of
+		[] -> Nothing
+		(x : tr) -> Just (x, emptyDEQ)
+	(x : tf) -> Just (x, balance (MkDeque (lenf - 1) tf tf lenr r sr))
+
+pushBackDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque lenf f (drop 2 sf) (lenr+1) (elem:r) (drop 2 sr))
+
+popBackDEQ _ = Nothing
+
+fromListDEQ _ = MkDeque 0 [] [] 0 [] []
 
 balance :: Deque a -> Deque a
 balance (MkDeque lenf f sf lenr r sr)
@@ -87,3 +94,7 @@ rotateDrop :: [a] -> Int -> [a] -> [a]
 rotateDrop f 0 r = rotateRev f r []
 rotateDrop f 1 r = rotateRev f (drop 1 r) []
 rotateDrop (x: f) j r = x : rotateDrop f (j - 2) (drop 2 r)
+
+getDeque :: Maybe (a, Deque a) -> Deque a
+getDeque Nothing = emptyDEQ
+getDeque (Just (x, d)) = d
