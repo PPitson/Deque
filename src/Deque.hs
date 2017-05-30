@@ -105,8 +105,8 @@ fromListDEQ :: [a] -> Deque a
 fromListDEQ [] = emptyDEQ
 fromListDEQ (x : t) = MkDeque lenf f lenr r
   where list = x : t
-        (f, rr) = splitAt (length list `div` 2) list
-        r = reverse rr
+        (f, r') = splitAt (length list `div` 2) list
+        r = reverse r'
         lenf = length f
         lenr = length r
 
