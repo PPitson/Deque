@@ -40,42 +40,38 @@ emptyDEQ = MkDeque 0 [] 0 []
 -- |
 -- O(1)
 isEmptyDEQ :: Deque a -> Bool
-isEmptyDEQ (MkDeque lenf f lenr r) = (lenf + lenr) == 0
+isEmptyDEQ (MkDeque lenf _ lenr _) = (lenf + lenr) == 0
 
 -- |
 -- O(1)
 lengthDEQ :: Deque a -> Int
-lengthDEQ (MkDeque lenf f lenr r) = lenf + lenr
+lengthDEQ (MkDeque lenf _ lenr _) = lenf + lenr
 
 -- |
 -- O(1)
 firstDEQ :: Deque a -> Maybe a
-firstDEQ (MkDeque lenf f lenr r) = case f of
-    [] -> case r of
-        [] -> Nothing
-        (x : tr) -> Just x
-    (x : tf) -> Just x
+firstDEQ (MkDeque _ [] _ []) = Nothing
+firstDEQ (MkDeque _ [] _ (x:tr)) = Just x
+firstDEQ (MkDeque _ (x:tf) _ _) = Just x
 
 -- |
 -- O(1)
 lastDEQ :: Deque a -> Maybe a
-lastDEQ (MkDeque lenf f lenr r) = case r of
-    [] -> case f of
-        [] -> Nothing
-        (x : tf) -> Just x
-    (x : tr) -> Just x
+lastDEQ (MkDeque _ [] _ []) = Nothing
+lastDEQ (MkDeque _ (x:tf) _ []) = Just x
+lastDEQ (MkDeque _ _ _ (x:tr)) = Just x
 
 -- |
 -- O(n)
 takeFrontDEQ :: Int -> Deque a -> [a]
-takeFrontDEQ i (MkDeque lenf f lenr r)
+takeFrontDEQ i (MkDeque lenf f _ r)
     | i <= lenf = take i f
     | otherwise = take i (f ++ reverse r)
 
 -- |
 -- O(n)
 takeBackDEQ :: Int -> Deque a -> [a]
-takeBackDEQ i (MkDeque lenf f lenr r)
+takeBackDEQ i (MkDeque _ f lenr r)
     | i <= lenr = take i r
     | otherwise = take i (r ++ reverse f)
 
@@ -87,11 +83,9 @@ pushFrontDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque (lenf+1) (elem:f) l
 -- |
 -- O(1) amortised
 popFrontDEQ :: Deque a -> Maybe (a, Deque a)
-popFrontDEQ (MkDeque lenf f lenr r) = case f of
-    [] -> case r of
-        [] -> Nothing
-        (x : tr) -> Just (x, emptyDEQ)
-    (x : tf) -> Just (x, balance (MkDeque (lenf - 1) tf lenr r))
+popFrontDEQ (MkDeque _ [] _ []) = Nothing
+popFrontDEQ (MkDeque _ [] _ (x:tr)) = Just (x, emptyDEQ)
+popFrontDEQ (MkDeque lenf (x:tf) lenr r) = Just (x, balance (MkDeque (lenf - 1) tf lenr r))
 
 -- |
 -- O(1) amortised
@@ -101,11 +95,9 @@ pushBackDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque lenf f (lenr+1) (ele
 -- |
 -- O(1) amortised
 popBackDEQ :: Deque a -> Maybe (a, Deque a)
-popBackDEQ (MkDeque lenf f lenr r) = case r of
-    [] -> case f of
-        [] -> Nothing
-        (x : tf) -> Just (x, emptyDEQ)
-    (x : tr) -> Just (x, balance (MkDeque lenf f (lenr-1) tr))
+popBackDEQ (MkDeque _ [] _ []) = Nothing
+popBackDEQ (MkDeque _ (x:tf) _ []) = Just (x, emptyDEQ)
+popBackDEQ (MkDeque lenf f lenr (x:tr)) = Just (x, balance (MkDeque lenf f (lenr-1) tr))
 
 -- |
 -- O(n)
@@ -118,10 +110,12 @@ fromListDEQ (x : t) = MkDeque lenf f lenr r
         lenf = length f
         lenr = length r
 
-
 toListDEQ :: Deque a -> [a]
 toListDEQ (MkDeque lenf f lenr r) = f ++ reverse r
 
+getDeque :: Maybe (a, Deque a) -> Deque a
+getDeque Nothing = emptyDEQ
+getDeque (Just (x, d)) = d
 
 
 balance :: Deque a -> Deque a
@@ -149,7 +143,3 @@ rotateDrop :: [a] -> Int -> [a] -> [a]
 rotateDrop f 0 r = rotateRev f r []
 rotateDrop f 1 r = rotateRev f (drop 1 r) []
 rotateDrop (x: f) j r = x : rotateDrop f (j - 2) (drop 2 r)
-
-getDeque :: Maybe (a, Deque a) -> Deque a
-getDeque Nothing = emptyDEQ
-getDeque (Just (x, d)) = d
