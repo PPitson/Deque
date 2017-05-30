@@ -65,9 +65,13 @@ popFrontDEQ (MkDeque lenf f sf lenr r sr) = case f of
 
 pushBackDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque lenf f (drop 2 sf) (lenr+1) (elem:r) (drop 2 sr))
 
-popBackDEQ _ = Nothing
+popBackDEQ (MkDeque lenf f sf lenr r sr) = case r of
+	[] -> case f of
+		[] -> Nothing
+		(x : tf) -> Just (x, emptyDEQ)
+	(x : tr) -> Just (x, balance (MkDeque lenf f sf (lenr-1) tr tr))
 
-fromListDEQ _ = MkDeque 0 [] [] 0 [] []
+fromListDEQ li = 
 
 balance :: Deque a -> Deque a
 balance (MkDeque lenf f sf lenr r sr)
