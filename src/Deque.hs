@@ -1,82 +1,112 @@
+-- |
+-- Double-ended queue (deque) purely functional implementation using two lists
 module Deque
  ( Deque
- , emptyDEQ     -- :: Deque a
- , isEmptyDEQ   -- :: Deque a -> Bool
- , lengthDEQ    -- :: Deque a -> Int, O(1)
- , firstDEQ     -- :: Deque a -> Maybe a,  O(1)
- , lastDEQ      -- :: Deque a -> Maybe a, O(1)
- , takeFrontDEQ -- :: Int -> Deque a -> [a], O(n)
- , takeBackDEQ  -- :: Int -> Deque a -> [a], O(n)
- , pushFrontDEQ -- :: Deque a -> a -> Deque a, O(1) amortised
- , popFrontDEQ  -- :: Deque a -> Maybe (a, Deque a), O(1) amortised
- , pushBackDEQ  -- :: Deque a -> a -> Deque a, O(1) amortised
- , popBackDEQ   -- :: Deque a -> Maybe (a, q a), O(1) amortised
- , fromListDEQ  -- :: [a] -> Deque a, O(n)
+ , emptyDEQ
+ , isEmptyDEQ
+ , lengthDEQ
+ , firstDEQ
+ , lastDEQ
+ , takeFrontDEQ
+ , takeBackDEQ
+ , pushFrontDEQ
+ , popFrontDEQ
+ , pushBackDEQ
+ , popBackDEQ
+ , fromListDEQ
  ) where
 
+-- |
+-- Deque is a 4-tuple (lenf, f, lenr, r), where lenf is length of list f,
+-- f is a front list, lenr is a length of list r, r is a reversed rear list
 data Deque a = MkDeque Int [a] Int [a] deriving Show
 
+-- |
+-- O(1)
 emptyDEQ :: Deque a
-isEmptyDEQ :: Deque a -> Bool
-lengthDEQ :: Deque a -> Int
-firstDEQ :: Deque a -> Maybe a
-lastDEQ :: Deque a -> Maybe a
-takeFrontDEQ :: Int -> Deque a -> [a]
-takeBackDEQ :: Int -> Deque a -> [a]
-pushFrontDEQ :: Deque a -> a -> Deque a
-popFrontDEQ :: Deque a -> Maybe (a, Deque a)
-pushBackDEQ :: Deque a -> a -> Deque a
-popBackDEQ :: Deque a -> Maybe (a, Deque a)
-fromListDEQ :: [a] -> Deque a
-
 emptyDEQ = MkDeque 0 [] 0 []
 
+-- |
+-- O(1)
+isEmptyDEQ :: Deque a -> Bool
 isEmptyDEQ (MkDeque lenf f lenr r) = (lenf + lenr) == 0
 
+-- |
+-- O(1)
+lengthDEQ :: Deque a -> Int
 lengthDEQ (MkDeque lenf f lenr r) = lenf + lenr
 
+-- |
+-- O(1)
+firstDEQ :: Deque a -> Maybe a
 firstDEQ (MkDeque lenf f lenr r) = case f of
 	[] -> case r of
 		[] -> Nothing
 		(x : tr) -> Just x
 	(x : tf) -> Just x
 
+-- |
+-- O(1)
+lastDEQ :: Deque a -> Maybe a
 lastDEQ (MkDeque lenf f lenr r) = case r of
 	[] -> case f of
 		[] -> Nothing
 		(x : tf) -> Just x
 	(x : tr) -> Just x
 
+-- |
+-- O(n)
+takeFrontDEQ :: Int -> Deque a -> [a]
 takeFrontDEQ i (MkDeque lenf f lenr r)
     | i <= lenf = take i f
     | otherwise = take i (f ++ reverse r)
 
+-- |
+-- O(n)
+takeBackDEQ :: Int -> Deque a -> [a]
 takeBackDEQ i (MkDeque lenf f lenr r)
     | i <= lenr = take i r
     | otherwise = take i (r ++ reverse f)
 
+-- |
+-- O(1) amortised
+pushFrontDEQ :: Deque a -> a -> Deque a
 pushFrontDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque (lenf+1) (elem:f) lenr r)
 
+-- |
+-- O(1) amortised
+popFrontDEQ :: Deque a -> Maybe (a, Deque a)
 popFrontDEQ (MkDeque lenf f lenr r) = case f of
 	[] -> case r of
 		[] -> Nothing
 		(x : tr) -> Just (x, emptyDEQ)
 	(x : tf) -> Just (x, balance (MkDeque (lenf - 1) tf lenr r))
 
+-- |
+-- O(1) amortised
+pushBackDEQ :: Deque a -> a -> Deque a
 pushBackDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque lenf f (lenr+1) (elem:r))
 
+-- |
+-- O(1) amortised
+popBackDEQ :: Deque a -> Maybe (a, Deque a)
 popBackDEQ (MkDeque lenf f lenr r) = case r of
 	[] -> case f of
 		[] -> Nothing
 		(x : tf) -> Just (x, emptyDEQ)
 	(x : tr) -> Just (x, balance (MkDeque lenf f (lenr-1) tr))
 
+-- |
+-- O(n)
+fromListDEQ :: [a] -> Deque a
 fromListDEQ [] = emptyDEQ
 fromListDEQ (x : t) = MkDeque lenf f lenr r
   where list = x : t
         (f, r) = splitAt (length list `div` 2) list
         lenf = length f
         lenr = length r
+
+
 
 balance :: Deque a -> Deque a
 balance (MkDeque lenf f lenr r)
