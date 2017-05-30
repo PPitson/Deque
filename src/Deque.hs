@@ -19,7 +19,10 @@ module Deque
 -- |
 -- Deque is a 4-tuple (lenf, f, lenr, r), where lenf is length of list f,
 -- f is a front list, lenr is a length of list r, r is a reversed rear list
-data Deque a = MkDeque Int [a] Int [a] deriving Show
+data Deque a = MkDeque Int [a] Int [a]
+
+instance Show a => Show (Deque a) where
+   show (MkDeque _ f _ r) = show (f ++ reverse r)
 
 -- |
 -- O(1)
