@@ -15,6 +15,7 @@ module Deque
  , popBackDEQ
  , fromListDEQ
  , toListDEQ
+ , getDeque
  ) where
 
 -- |
