@@ -47,9 +47,13 @@ lastDEQ (MkDeque lenf f sf lenr r sr) = case r of
 		(x : tf) -> Just x
 	(x : tr) -> Just x
 
-takeFrontDEQ _ _ = []
+takeFrontDEQ i (MkDeque lenf f sf lenr r sr) = 
+    | i <= lenf = take i f
+    | otherwise = take i (f ++ reverse r)
 
-takeBackDEQ _ _ = []
+takeBackDEQ i (MkDeque lenf f sf lenr r sr) = 
+    | i <= lenr = take i r
+    | otherwise = take i (r ++ reverse f)
 
 pushFrontDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque (lenf+1) (elem:f) (drop 2 sf) lenr r (drop 2 sr))
 popFrontDEQ _ = Nothing
