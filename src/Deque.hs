@@ -27,7 +27,7 @@ instance Show a => Show (Deque a) where
    show (MkDeque _ f _ r) = show (f ++ reverse r)
 
 instance Eq a => Eq (Deque a) where
-  (==) (MkDeque _ f1 _ r1) (MkDeque _ f2 _ r2) = (f1 ++ r1) == (f2 ++ r2)
+  (==) (MkDeque _ f1 _ r1) (MkDeque _ f2 _ r2) = (f1 ++ reverse r1) == (f2 ++ reverse r2)
 
 instance Functor Deque where
   fmap g (MkDeque lenf f lenr r) = MkDeque lenf (fmap g f) lenr (fmap g r)
