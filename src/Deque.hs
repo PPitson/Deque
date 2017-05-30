@@ -26,7 +26,7 @@ takeBackDEQ :: Int -> Deque a -> [a]
 pushFrontDEQ :: Deque a -> a -> Deque a
 popFrontDEQ :: Deque a -> Maybe (a, Deque a)
 pushBackDEQ :: Deque a -> a -> Deque a
-popBackDEQ :: Deque a -> Maybe (a, q a)
+popBackDEQ :: Deque a -> Maybe (a, Deque a)
 fromListDEQ :: [a] -> Deque a
 
 emptyDEQ = MkDeque 0 [] [] 0 [] []
@@ -71,7 +71,14 @@ popBackDEQ (MkDeque lenf f sf lenr r sr) = case r of
 		(x : tf) -> Just (x, emptyDEQ)
 	(x : tr) -> Just (x, balance (MkDeque lenf f sf (lenr-1) tr tr))
 
-fromListDEQ li = 
+fromListDEQ [] = emptyDEQ
+fromListDEQ (x : t) = MkDeque lenf f sf lenr r sr
+  where list = x : t
+        (f, r) = splitAt (length list `div` 2) list
+        lenf = length f
+        lenr = length r
+        sf = tail f
+        sr = tail r
 
 balance :: Deque a -> Deque a
 balance (MkDeque lenf f sf lenr r sr)
