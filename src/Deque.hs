@@ -14,6 +14,8 @@ module Deque
  , fromListDEQ  -- :: [a] -> Deque a, O(n)
  ) where
 
+data Deque a = MkDeque Int [a] [a] Int [a] [a]
+
 emptyDEQ :: Deque a
 isEmptyDEQ :: Deque a -> Bool
 lengthDEQ :: Deque a -> Int
@@ -26,3 +28,16 @@ popFrontDEQ :: Deque a -> Maybe (a, Deque a)
 pushBackDEQ :: Deque a -> a -> Deque a
 popBackDEQ :: Deque a -> Maybe (a, q a)
 fromListDEQ :: [a] -> Deque a
+
+emptyDEQ = MkDeque 0 [] [] 0 [] []
+isEmptyDEQ (MkDeque lenf f sf lenr r sr) = (lenf + lenr) == 0
+lengthDEQ (MkDeque lenf f sf lenr r sr) = lenf + lenr
+firstDEQ _ = Nothing
+lastDEQ _ = Nothing
+takeFrontDEQ _ _ = []
+takeBackDEQ _ _ = []
+pushFrontDEQ _ _ = MkDeque 0 [] [] 0 [] []
+popFrontDEQ _ = Nothing
+pushBackDEQ _ _ = MkDeque 0 [] [] 0 [] []
+popBackDEQ _ = Nothing
+fromListDEQ _ = MkDeque 0 [] [] 0 [] []
