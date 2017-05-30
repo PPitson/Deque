@@ -29,7 +29,7 @@ pushBackDEQ :: Deque a -> a -> Deque a
 popBackDEQ :: Deque a -> Maybe (a, Deque a)
 fromListDEQ :: [a] -> Deque a
 
-emptyDEQ = MkDeque 0 [] [] 0 [] []
+emptyDEQ = MkDeque 0 [] 0 []
 
 isEmptyDEQ (MkDeque lenf f lenr r) = (lenf + lenr) == 0
 
@@ -57,7 +57,7 @@ takeBackDEQ i (MkDeque lenf f lenr r)
 
 pushFrontDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque (lenf+1) (elem:f) lenr r)
 
-popFrontDEQ (MkDeque lenf f sf lenr r sr) = case f of
+popFrontDEQ (MkDeque lenf f lenr r) = case f of
 	[] -> case r of
 		[] -> Nothing
 		(x : tr) -> Just (x, emptyDEQ)
