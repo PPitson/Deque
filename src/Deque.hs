@@ -14,7 +14,7 @@ module Deque
  , fromListDEQ  -- :: [a] -> Deque a, O(n)
  ) where
 
-data Deque a = MkDeque Int [a] [a] Int [a] [a] deriving Show
+data Deque a = MkDeque Int [a] Int [a] deriving Show
 
 emptyDEQ :: Deque a
 isEmptyDEQ :: Deque a -> Bool
@@ -31,70 +31,68 @@ fromListDEQ :: [a] -> Deque a
 
 emptyDEQ = MkDeque 0 [] [] 0 [] []
 
-isEmptyDEQ (MkDeque lenf f sf lenr r sr) = (lenf + lenr) == 0
+isEmptyDEQ (MkDeque lenf f lenr r) = (lenf + lenr) == 0
 
-lengthDEQ (MkDeque lenf f sf lenr r sr) = lenf + lenr
+lengthDEQ (MkDeque lenf f lenr r) = lenf + lenr
 
-firstDEQ (MkDeque lenf f sf lenr r sr) = case f of
+firstDEQ (MkDeque lenf f lenr r) = case f of
 	[] -> case r of
 		[] -> Nothing
 		(x : tr) -> Just x
 	(x : tf) -> Just x
 
-lastDEQ (MkDeque lenf f sf lenr r sr) = case r of
+lastDEQ (MkDeque lenf f lenr r) = case r of
 	[] -> case f of
 		[] -> Nothing
 		(x : tf) -> Just x
 	(x : tr) -> Just x
 
-takeFrontDEQ i (MkDeque lenf f sf lenr r sr)
+takeFrontDEQ i (MkDeque lenf f lenr r)
     | i <= lenf = take i f
     | otherwise = take i (f ++ reverse r)
 
-takeBackDEQ i (MkDeque lenf f sf lenr r sr)
+takeBackDEQ i (MkDeque lenf f lenr r)
     | i <= lenr = take i r
     | otherwise = take i (r ++ reverse f)
 
-pushFrontDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque (lenf+1) (elem:f) (drop 2 sf) lenr r (drop 2 sr))
+pushFrontDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque (lenf+1) (elem:f) lenr r)
 
 popFrontDEQ (MkDeque lenf f sf lenr r sr) = case f of
 	[] -> case r of
 		[] -> Nothing
 		(x : tr) -> Just (x, emptyDEQ)
-	(x : tf) -> Just (x, balance (MkDeque (lenf - 1) tf tf lenr r sr))
+	(x : tf) -> Just (x, balance (MkDeque (lenf - 1) tf lenr r))
 
-pushBackDEQ (MkDeque lenf f sf lenr r sr) elem = balance (MkDeque lenf f (drop 2 sf) (lenr+1) (elem:r) (drop 2 sr))
+pushBackDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque lenf f (lenr+1) (elem:r))
 
-popBackDEQ (MkDeque lenf f sf lenr r sr) = case r of
+popBackDEQ (MkDeque lenf f lenr r) = case r of
 	[] -> case f of
 		[] -> Nothing
 		(x : tf) -> Just (x, emptyDEQ)
-	(x : tr) -> Just (x, balance (MkDeque lenf f sf (lenr-1) tr tr))
+	(x : tr) -> Just (x, balance (MkDeque lenf f (lenr-1) tr))
 
 fromListDEQ [] = emptyDEQ
-fromListDEQ (x : t) = MkDeque lenf f sf lenr r sr
+fromListDEQ (x : t) = MkDeque lenf f lenr r
   where list = x : t
         (f, r) = splitAt (length list `div` 2) list
         lenf = length f
         lenr = length r
-        sf = tail f
-        sr = tail r
 
 balance :: Deque a -> Deque a
-balance (MkDeque lenf f sf lenr r sr)
+balance (MkDeque lenf f lenr r)
 	| lenf > 2*lenr+1 =
 		let i = (lenf+lenr) `div` 2
 		    j = lenf + lenr -i
 		    f' = take i f
 		    r' = rotateDrop r i f
-		in MkDeque i f' f' j r' r'
+		in MkDeque i f' j r'
   | lenr > 2*lenf+1 =
 		let j = (lenf+lenr) `div` 2
 		    i = lenf + lenr - j
 		    r' = take i r
 		    f' = rotateDrop f i r
-		in MkDeque i f' f' j r' r'
-	| otherwise = MkDeque lenf f sf lenr r sr
+		in MkDeque i f' j r'
+	| otherwise = MkDeque lenf f lenr r
 
 rotateRev :: [a] -> [a] -> [a] -> [a]
 rotateRev [] r a = reverse (r ++ a)
