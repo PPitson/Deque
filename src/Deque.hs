@@ -110,8 +110,10 @@ fromListDEQ (x : t) = MkDeque lenf f lenr r
         lenf = length f
         lenr = length r
 
+-- |
+-- O(n)
 toListDEQ :: Deque a -> [a]
-toListDEQ (MkDeque lenf f lenr r) = f ++ reverse r
+toListDEQ (MkDeque _ f _ r) = f ++ reverse r
 
 getDeque :: Maybe (a, Deque a) -> Deque a
 getDeque Nothing = emptyDEQ
