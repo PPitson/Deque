@@ -2,34 +2,33 @@ import Test.HUnit
 import Deque
 
 
-
 -- empty deque equality
-test1 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ emptyDEQ) ) 
-test2 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ getDeque $ popBackDEQ $ (pushFrontDEQ emptyDEQ 1)) ) 
-test3 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ getDeque $ popBackDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [3, 4]) ) 
+test1 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ emptyDEQ) )
+test2 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ getDeque $ popBackDEQ $ (pushFrontDEQ emptyDEQ 1)) )
+test3 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ getDeque $ popBackDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [3, 4]) )
 test4 = TestCase (assertEqual "empty deque length" True (isEmptyDEQ $ fromListDEQ $ []) )
 
--- non-empty deque 
+-- non-empty deque
 test5 = TestCase (assertEqual "non-empty deque length" False (isEmptyDEQ $ fromListDEQ $ [3]) )
 test6 = TestCase (assertEqual "non-empty deque length" False (isEmptyDEQ $ fromListDEQ $ [5, 2, 6, 7, 3]) )
 test7 = TestCase (assertEqual "non-empty deque length" False (isEmptyDEQ $ pushFrontDEQ (getDeque $ popBackDEQ $ emptyDEQ) 1) )
 
 -- length of empty deque
-test8 = TestCase (assertEqual "complex empty deque length" True (isEmptyDEQ $ getDeque $ popFrontDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [1, 2]) ) 
+test8 = TestCase (assertEqual "complex empty deque length" True (isEmptyDEQ $ getDeque $ popFrontDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [1, 2]) )
 test9 = TestCase (assertEqual "complex empty deque length" False (isEmptyDEQ $ getDeque $ popFrontDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [1, 2, 4]) )
 test10 = TestCase (assertEqual "complex empty deque length" False (isEmptyDEQ $ pushFrontDEQ (getDeque $ popFrontDEQ $ getDeque $ popFrontDEQ $ fromListDEQ $ [1]) 1) )
 
 someList = [1, 6, 4, 2, 6, 3, 7]
 
 -- fromList and toList methods
-test11 = TestCase (assertEqual "deque from list and to list" someList (toListDEQ $ fromListDEQ $ someList) ) 
-test12 = TestCase (assertEqual "deque from list and to list" True (null $ toListDEQ $ emptyDEQ) ) 
-test13 = TestCase (assertEqual "deque from list and to list" True (isEmptyDEQ $ fromListDEQ $ toListDEQ $ emptyDEQ) ) 
+test11 = TestCase (assertEqual "deque from list and to list" someList (toListDEQ $ fromListDEQ $ someList) )
+test12 = TestCase (assertEqual "deque from list and to list" True (null $ toListDEQ $ emptyDEQ) )
+test13 = TestCase (assertEqual "deque from list and to list" True (isEmptyDEQ $ fromListDEQ $ toListDEQ $ emptyDEQ) )
 
 -- length of deque
-test14 = TestCase (assertEqual "deque length" 0 (lengthDEQ $ fromListDEQ $ []) ) 
-test15 = TestCase (assertEqual "deque length" 1 (lengthDEQ $ fromListDEQ $ [3]) ) 
-test16 = TestCase (assertEqual "deque length" 3 (lengthDEQ $ fromListDEQ $ [3, 4, 5]) ) 
+test14 = TestCase (assertEqual "deque length" 0 (lengthDEQ $ fromListDEQ $ []) )
+test15 = TestCase (assertEqual "deque length" 1 (lengthDEQ $ fromListDEQ $ [3]) )
+test16 = TestCase (assertEqual "deque length" 3 (lengthDEQ $ fromListDEQ $ [3, 4, 5]) )
 
 -- first element from non-empty deque
 test17 = TestCase (assertEqual "first of non-empty deque" (Just 4) (firstDEQ $ fromListDEQ $ [4]) )
@@ -63,13 +62,13 @@ test30 = TestCase (assertEqual "take back from non-empty deque" ['d', 'c', 'b'] 
 
 
 -- multiple push front and push back
-test31 = TestCase (assertEqual "push front and push back equality"   (pushFrontDEQ (pushFrontDEQ (pushFrontDEQ emptyDEQ 1) 2) 3) 
+test31 = TestCase (assertEqual "push front and push back equality"   (pushFrontDEQ (pushFrontDEQ (pushFrontDEQ emptyDEQ 1) 2) 3)
     (pushBackDEQ (pushBackDEQ (pushBackDEQ emptyDEQ 3) 2) 1) )
-test32 = TestCase (assertEqual "push front and push back equality"   (pushFrontDEQ (pushBackDEQ (fromListDEQ $ [1, 2]) 3) 0) 
+test32 = TestCase (assertEqual "push front and push back equality"   (pushFrontDEQ (pushBackDEQ (fromListDEQ $ [1, 2]) 3) 0)
     (pushFrontDEQ(pushBackDEQ (pushFrontDEQ (fromListDEQ $ [2]) 1) 3) 0) )
 test33 = TestCase (assertEqual "push front and push back equality"   (pushBackDEQ emptyDEQ 42) (pushFrontDEQ emptyDEQ 42) )
 
--- push front 
+-- push front
 test34 = TestCase (assertEqual "push front" [1]  (toListDEQ $ (pushFrontDEQ emptyDEQ 1)) )
 test35 = TestCase (assertEqual "push front" [1, 2, 3, 4]  (toListDEQ $ (pushFrontDEQ (fromListDEQ $ [2, 3, 4]) 1)) )
 test36 = TestCase (assertEqual "push front" [1, 2, 3]  (toListDEQ (pushFrontDEQ (pushFrontDEQ (pushFrontDEQ emptyDEQ 3) 2) 1)) )
