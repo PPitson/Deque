@@ -30,7 +30,7 @@ executable Deque-exe
 
 test-suite unit-tests
   type:                exitcode-stdio-1.0
-  main-is:             Spec.hs
+  main-is:             HUnitTests.hs
   hs-source-dirs:      test/unit
   build-depends:       base
                      , Deque
@@ -40,7 +40,7 @@ test-suite unit-tests
 
 test-suite quickcheck-tests
   type:               exitcode-stdio-1.0
-  main-is:            Spec.hs
+  main-is:            QuickCheckTests.hs
   hs-source-dirs:     test/quickcheck
   build-depends:      base
                     , Deque
