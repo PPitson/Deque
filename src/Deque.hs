@@ -16,6 +16,7 @@ module Deque
  , fromListDEQ
  , toListDEQ
  , getDeque
+ , isBalanced
  ) where
 
 -- |
@@ -118,9 +119,17 @@ fromListDEQ (x : t) = MkDeque lenf f lenr r
 toListDEQ :: Deque a -> [a]
 toListDEQ (MkDeque _ f _ r) = f ++ reverse r
 
+-- |
+-- Gets deque from result of either pop function
+-- O(1)
 getDeque :: Maybe (a, Deque a) -> Deque a
 getDeque Nothing = emptyDEQ
 getDeque (Just (x, d)) = d
+
+-- |
+-- O(1)
+isBalanced :: Deque a -> Bool
+isBalanced (MkDeque lenf _ lenr _ ) = (lenf <= 2 * lenr + 1) || (lenr <= 2 * lenf + 1)
 
 
 balance :: Deque a -> Deque a

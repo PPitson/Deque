@@ -26,6 +26,12 @@ prop_TakeFront d list = takeFrontDEQ (length list) (foldr (flip pushFrontDEQ) d 
 prop_TakeBack :: Deque Int -> [Int] -> Bool
 prop_TakeBack d list = takeBackDEQ (length list) (foldr (flip pushBackDEQ) d list) == list
 
+prop_BalancedAfterFrontPushes :: Deque Int -> [Int] -> Bool
+prop_BalancedAfterFrontPushes d list = isBalanced (foldr (flip pushFrontDEQ) d list)
+
+prop_BalancedAfterBackPushes :: Deque Int -> [Int] -> Bool
+prop_BalancedAfterBackPushes d list = isBalanced (foldr (flip pushBackDEQ) d list)
+
 prop_ToFromList :: [Int] -> Bool
 prop_ToFromList list = toListDEQ (fromListDEQ list) == list
 
