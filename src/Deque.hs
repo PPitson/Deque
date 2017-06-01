@@ -136,24 +136,14 @@ balance :: Deque a -> Deque a
 balance (MkDeque lenf f lenr r)
     | lenf > 2*lenr+1 =
         let i = (lenf+lenr) `div` 2
-            j = lenf + lenr -i
+            j = lenf + lenr - i
             f' = take i f
-            r' = rotateDrop r i f
+            r' = r ++ reverse (drop i f)
         in MkDeque i f' j r'
     | lenr > 2*lenf+1 =
-        let j = (lenf+lenr) `div` 2
-            i = lenf + lenr - j
-            r' = take i r
-            f' = rotateDrop f i r
+        let i = (lenf+lenr) `div` 2
+            j = lenf + lenr - i
+            f' = f ++ reverse (drop j r)
+            r' = take j r
         in MkDeque i f' j r'
     | otherwise = MkDeque lenf f lenr r
-
-rotateRev :: [a] -> [a] -> [a] -> [a]
-rotateRev [] r a = reverse (r ++ a)
-rotateRev f r [] = f ++ reverse r
-rotateRev (x: f) r a = x : rotateRev f (drop 2 r) (reverse (take 2 r ++ a))
-
-rotateDrop :: [a] -> Int -> [a] -> [a]
-rotateDrop f 0 r = rotateRev f r []
-rotateDrop f 1 r = rotateRev f (drop 1 r) []
-rotateDrop (x: f) j r = x : rotateDrop f (j - 2) (drop 2 r)
