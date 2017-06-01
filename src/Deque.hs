@@ -32,6 +32,9 @@ instance Eq a => Eq (Deque a) where
 instance Functor Deque where
   fmap g (MkDeque lenf f lenr r) = MkDeque lenf (fmap g f) lenr (fmap g r)
 
+instance Foldable Deque where
+  foldMap g (MkDeque _ f _ r) = foldMap g (f ++ reverse r)
+
 -- |
 -- O(1)
 emptyDEQ :: Deque a

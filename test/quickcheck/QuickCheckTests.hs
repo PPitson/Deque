@@ -20,6 +20,12 @@ prop_PushPopFront d x = getDeque (popFrontDEQ (pushFrontDEQ d x)) == d
 prop_PushPopBack ::  Deque Int -> Int -> Bool
 prop_PushPopBack d x = getDeque (popBackDEQ (pushBackDEQ d x)) == d
 
+prop_TakeFront :: Deque Int -> [Int] -> Bool
+prop_TakeFront d list = takeFrontDEQ (length list) (foldr (flip pushFrontDEQ) d list) == list
+
+prop_TakeBack :: Deque Int -> [Int] -> Bool
+prop_TakeBack d list = takeBackDEQ (length list) (foldr (flip pushBackDEQ) d list) == list
+
 prop_ToFromList :: [Int] -> Bool
 prop_ToFromList list = toListDEQ (fromListDEQ list) == list
 
