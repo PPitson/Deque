@@ -1,5 +1,6 @@
 -- |
--- Double-ended queue (deque) purely functional implementation using two lists
+-- Double-ended queue (deque) purely functional implementation
+-- based on Chris Okasaki's "Purely functional data structures"
 module Deque
  ( Deque
  , emptyDEQ
@@ -21,8 +22,7 @@ module Deque
  ) where
 
 -- |
--- Deque is a 4-tuple (lenf, f, lenr, r), where lenf is length of list f,
--- f is a front list, lenr is a length of list r, r is a reversed rear list
+-- Data type for deques
 data Deque a = MkDeque Int [a] Int [a]
 
 instance Show a => Show (Deque a) where
@@ -38,21 +38,29 @@ instance Foldable Deque where
   foldMap g (MkDeque _ f _ r) = foldMap g (f ++ reverse r)
 
 -- |
+-- Creates an empty deque
+--
 -- O(1)
 emptyDEQ :: Deque a
 emptyDEQ = MkDeque 0 [] 0 []
 
 -- |
+-- Returns true if deque is empty
+--
 -- O(1)
 isEmptyDEQ :: Deque a -> Bool
 isEmptyDEQ (MkDeque lenf _ lenr _) = (lenf + lenr) == 0
 
 -- |
+-- Returns length of deque
+--
 -- O(1)
 lengthDEQ :: Deque a -> Int
 lengthDEQ (MkDeque lenf _ lenr _) = lenf + lenr
 
 -- |
+-- Returns item from the front of deque, without removing it
+--
 -- O(1)
 firstDEQ :: Deque a -> Maybe a
 firstDEQ (MkDeque _ [] _ []) = Nothing
@@ -60,6 +68,8 @@ firstDEQ (MkDeque _ [] _ (x:tr)) = Just x
 firstDEQ (MkDeque _ (x:tf) _ _) = Just x
 
 -- |
+-- Returns item from the back of deque, without removing it
+--
 -- O(1)
 lastDEQ :: Deque a -> Maybe a
 lastDEQ (MkDeque _ [] _ []) = Nothing
@@ -67,6 +77,8 @@ lastDEQ (MkDeque _ (x:tf) _ []) = Just x
 lastDEQ (MkDeque _ _ _ (x:tr)) = Just x
 
 -- |
+-- Returns first n elements of deque
+--
 -- O(n)
 takeFrontDEQ :: Int -> Deque a -> [a]
 takeFrontDEQ i (MkDeque lenf f _ r)
@@ -74,6 +86,8 @@ takeFrontDEQ i (MkDeque lenf f _ r)
     | otherwise = take i (f ++ reverse r)
 
 -- |
+-- Returns last n elements of deque
+--
 -- O(n)
 takeBackDEQ :: Int -> Deque a -> [a]
 takeBackDEQ i (MkDeque _ f lenr r)
@@ -81,11 +95,15 @@ takeBackDEQ i (MkDeque _ f lenr r)
     | otherwise = take i (r ++ reverse f)
 
 -- |
+-- Pushes element to the front of deque and returns updated deque
+--
 -- O(1) amortised
 pushFrontDEQ :: Deque a -> a -> Deque a
 pushFrontDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque (lenf+1) (elem:f) lenr r)
 
 -- |
+-- Pops element from the front of deque and returns it alongside updated deque
+--
 -- O(1) amortised
 popFrontDEQ :: Deque a -> Maybe (a, Deque a)
 popFrontDEQ (MkDeque _ [] _ []) = Nothing
@@ -93,11 +111,15 @@ popFrontDEQ (MkDeque _ [] _ (x:tr)) = Just (x, emptyDEQ)
 popFrontDEQ (MkDeque lenf (x:tf) lenr r) = Just (x, balance (MkDeque (lenf - 1) tf lenr r))
 
 -- |
+-- Pushes element to the back of deque and returns updated deque
+--
 -- O(1) amortised
 pushBackDEQ :: Deque a -> a -> Deque a
 pushBackDEQ (MkDeque lenf f lenr r) elem = balance (MkDeque lenf f (lenr+1) (elem:r))
 
 -- |
+-- Pops element from the back of deque and returns it alongside updated deque
+--
 -- O(1) amortised
 popBackDEQ :: Deque a -> Maybe (a, Deque a)
 popBackDEQ (MkDeque _ [] _ []) = Nothing
@@ -105,11 +127,15 @@ popBackDEQ (MkDeque _ (x:tf) _ []) = Just (x, emptyDEQ)
 popBackDEQ (MkDeque lenf f lenr (x:tr)) = Just (x, balance (MkDeque lenf f (lenr-1) tr))
 
 -- |
+-- Returns reversed deque
+--
 -- O(1)
 reverseDEQ :: Deque a -> Deque a
 reverseDEQ (MkDeque lenf f lenr r) = MkDeque lenr r lenf f
 
 -- |
+-- Creates deque from a list
+--
 -- O(n)
 fromListDEQ :: [a] -> Deque a
 fromListDEQ [] = emptyDEQ
@@ -121,6 +147,8 @@ fromListDEQ (x : t) = MkDeque lenf f lenr r
         lenr = length r
 
 -- |
+-- Creates list from a deque
+--
 -- O(n)
 toListDEQ :: Deque a -> [a]
 toListDEQ (MkDeque _ f _ r) = f ++ reverse r
@@ -134,6 +162,8 @@ getDeque Nothing = emptyDEQ
 getDeque (Just (x, d)) = d
 
 -- |
+-- Returns true if deque is balanced
+--
 -- O(1)
 isBalanced :: Deque a -> Bool
 isBalanced (MkDeque lenf _ lenr _ ) = (lenf <= 2 * lenr + 1) || (lenr <= 2 * lenf + 1)
