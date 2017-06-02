@@ -32,6 +32,9 @@ prop_BalancedAfterFrontPushes d list = isBalanced (foldr (flip pushFrontDEQ) d l
 prop_BalancedAfterBackPushes :: Deque Int -> [Int] -> Bool
 prop_BalancedAfterBackPushes d list = isBalanced (foldr (flip pushBackDEQ) d list)
 
+prop_Reverse :: Deque Int -> Bool
+prop_Reverse d = reverseDEQ (reverseDEQ d) == d
+
 prop_ToFromList :: [Int] -> Bool
 prop_ToFromList list = toListDEQ (fromListDEQ list) == list
 

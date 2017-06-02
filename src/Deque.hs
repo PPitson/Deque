@@ -13,6 +13,7 @@ module Deque
  , popFrontDEQ
  , pushBackDEQ
  , popBackDEQ
+ , reverseDEQ
  , fromListDEQ
  , toListDEQ
  , getDeque
@@ -104,6 +105,11 @@ popBackDEQ (MkDeque _ (x:tf) _ []) = Just (x, emptyDEQ)
 popBackDEQ (MkDeque lenf f lenr (x:tr)) = Just (x, balance (MkDeque lenf f (lenr-1) tr))
 
 -- |
+-- O(1)
+reverseDEQ :: Deque a -> Deque a
+reverseDEQ (MkDeque lenf f lenr r) = MkDeque lenr r lenf f
+
+-- |
 -- O(n)
 fromListDEQ :: [a] -> Deque a
 fromListDEQ [] = emptyDEQ
@@ -121,6 +127,7 @@ toListDEQ (MkDeque _ f _ r) = f ++ reverse r
 
 -- |
 -- Gets deque from result of either pop function
+--
 -- O(1)
 getDeque :: Maybe (a, Deque a) -> Deque a
 getDeque Nothing = emptyDEQ
