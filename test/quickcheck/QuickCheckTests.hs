@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 import Test.QuickCheck
+import Test.QuickCheck.Function
 import Data.Maybe
 import Deque
 
@@ -67,6 +68,16 @@ prop_LengthAfterFromList list = lengthDEQ (fromListDEQ list) == length list
 -- Checks if length of a list created from a deque is equal to deque's length
 prop_LengthAfterToList :: Deque Int -> Bool
 prop_LengthAfterToList d = length (toListDEQ d) == lengthDEQ d
+
+-- Checks if deque satisfies functor's identity law: fmap id = id
+prop_FunctorId :: Deque Int -> Bool
+prop_FunctorId d = fmap id d == d
+
+-- Checks if deque satisfies functor's composition law: fmap (f . g) = fmap f . fmap g
+prop_FunctorComposition :: Deque Int -> Fun String Double -> Fun Int String -> Bool
+prop_FunctorComposition d f' g' = fmap (f . g) d == (fmap f . fmap g $ d)
+  where f = apply f'
+        g = apply g'
 
 return []
 main = $quickCheckAll
